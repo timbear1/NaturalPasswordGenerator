@@ -1,2 +1,2 @@
 # NaturalPasswordGenerator
-Generate a passwords that are easy to remember
+Generate passwords that are easy to remember
