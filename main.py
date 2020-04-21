@@ -71,28 +71,42 @@ class MainWindow(QMainWindow):
 
     def create_input(self):
         widget = QWidget(self)
-        self.inputWidget = QHBoxLayout()
-        self.inputWidget.setContentsMargins(0, 0, 0, 0)
-        widget.setLayout(self.inputWidget)
+        self.input_widget = QHBoxLayout()
+        self.input_widget.setContentsMargins(0, 0, 0, 0)
+        widget.setLayout(self.input_widget)
         self.grid_layout.addWidget(widget, 2, 0, 6, 3)
 
     @pyqtSlot()
     def create_words_field(self):
-        self.inputs.append(WordInput(self.inputWidget))
+        self.inputs.append(WordInput(self.input_widget))
+        self.add_input_remove_btn()
 
     @pyqtSlot()
     def create_digits_field(self):
-        self.inputs.append(DigitsInput(self.inputWidget))
+        self.inputs.append(DigitsInput(self.input_widget))
+        self.add_input_remove_btn()
 
     @pyqtSlot()
     def create_characters_field(self):
-        self.inputs.append(CharactersInput(self.inputWidget))
+        self.inputs.append(CharactersInput(self.input_widget))
+        self.add_input_remove_btn()
+
+    def add_input_remove_btn(self):
+        remove_btn = QPushButton("Remove")
+        input_field = self.inputs[-1]
+        remove_btn.clicked.connect(lambda: self.remove_input(input_field))
+        self.inputs[-1].layout().addWidget(remove_btn, QtCore.Qt.AlignBottom)
+
+    @pyqtSlot()
+    def remove_input(self, input_field):
+        self.inputs.remove(input_field)
+        input_field.deleteLater()
 
     @pyqtSlot()
     def generate_password(self):
         password = ""
-        for x in self.inputs:
-            password += x.get_string()
+        for i in self.inputs:
+            password += i.generate()
         self.output.append(password)
         self.output.repaint()
 
@@ -116,8 +130,8 @@ class MainWindow(QMainWindow):
                 <h3>Character input</h3>
                 TDB<br/>
                 <br/>
-                Please report any issues at: <br/>
-                TDB<br/>
+                Please report any issues at: 
+                <a href=\"https://github.com/timotii48/NaturalPasswordGenerator\">Github</a><br/>
             """
             )
         msg_box.setTextFormat(QtCore.Qt.RichText)
@@ -128,8 +142,8 @@ class MainWindow(QMainWindow):
     def save(self):
         data = {}
         data['inputs'] = []
-        for x in self.inputs:
-            data['inputs'].append(x.serialize())
+        for i in self.inputs:
+            data['inputs'].append(i.serialize())
         with open('input.current', 'w') as outfile:
             json.dump(data, outfile, sort_keys=False, indent=4, separators=(',', ': '))
 
@@ -150,25 +164,23 @@ class MainWindow(QMainWindow):
         self.create_words_field()
         self.create_digits_field()
 
-class WordInput:
+
+class WordInput(QGroupBox):
     def __init__(self, parent):
-        group = QGroupBox("Words")
-        layout = QGridLayout()
-        group.setLayout(layout)
-        group.setFixedWidth(170)
+        QGroupBox.__init__(self, "Words")
+        layout = QVBoxLayout()
+        self.setLayout(layout)
+        self.setFixedWidth(200)
 
         self.words_field = QTextEdit()
-        layout.addWidget(self.words_field, 0, 0)
+        layout.addWidget(self.words_field)
 
-        remove_btn = QPushButton("Remove")
-        layout.addWidget(remove_btn, 1, 0)
-
-        parent.addWidget(group, QtCore.Qt.AlignTop)
+        parent.addWidget(self, QtCore.Qt.AlignTop)
 
     def clean_up(self):
         pass
 
-    def get_string(self):
+    def generate(self):
         texts = self.words_field.toPlainText().splitlines()
         texts = [text.strip() for text in texts] # remove whitespace
         texts = [text for text in texts if text] # remove empty
@@ -188,12 +200,12 @@ class WordInput:
         self.words_field.setPlainText(data['input'])
 
 
-class DigitsInput:
+class DigitsInput(QGroupBox):
     def __init__(self, parent):
-        group = QGroupBox("Digit(s)")
+        QGroupBox.__init__(self, "Digit(s)")
         layout = QVBoxLayout()
-        group.setLayout(layout)
-        group.setFixedWidth(170)
+        self.setLayout(layout)
+        self.setFixedWidth(200)
 
         num_label = QLabel("Number of digits:")
         layout.addWidget(num_label, QtCore.Qt.AlignBottom)
@@ -201,18 +213,14 @@ class DigitsInput:
         self.spin = QSpinBox()
         self.spin.setRange(1, 100)
         layout.addWidget(self.spin, QtCore.Qt.AlignTop)
-
         layout.addStretch(2000)
 
-        remove_btn = QPushButton("Remove")
-        layout.addWidget(remove_btn, QtCore.Qt.AlignBottom)
-
-        parent.addWidget(group, QtCore.Qt.AlignTop)
+        parent.addWidget(self, QtCore.Qt.AlignTop)
 
     def clean_up(self):
         pass
 
-    def get_string(self):
+    def generate(self):
         text = ""
         num = self.spin.value()
         for _ in range(num):
@@ -228,12 +236,13 @@ class DigitsInput:
     def deserialize(self, data):
         self.spin.setValue(data['input'])
 
-class CharactersInput:
+
+class CharactersInput(QGroupBox):
     def __init__(self, parent):
-        group = QGroupBox("Character(s)")
+        QGroupBox.__init__(self, "Character(s)")
         layout = QVBoxLayout()
-        group.setLayout(layout)
-        group.setFixedWidth(170)
+        self.setLayout(layout)
+        self.setFixedWidth(200)
 
         num_label = QLabel("Number of characters:")
         layout.addWidget(num_label, QtCore.Qt.AlignBottom)
@@ -241,18 +250,14 @@ class CharactersInput:
         self.spin = QSpinBox()
         self.spin.setRange(1, 100)
         layout.addWidget(self.spin, QtCore.Qt.AlignTop)
-
         layout.addStretch(2000)
 
-        remove_btn = QPushButton("Remove")
-        layout.addWidget(remove_btn, QtCore.Qt.AlignBottom)
-
-        parent.addWidget(group, QtCore.Qt.AlignTop)
+        parent.addWidget(self, QtCore.Qt.AlignTop)
 
     def clean_up(self):
         pass
 
-    def get_string(self):
+    def generate(self):
         chars = ['!', '#', '_', '-', '&', '%']
 
         text = ""
