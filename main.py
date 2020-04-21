@@ -12,7 +12,7 @@ class MainWindow(QMainWindow):
 
         self.inputs = []
 
-        self.setWindowTitle("Natural Password Generator")
+        self.setWindowTitle("Natural Password Generator - v1.0")
 
         central_widget = QWidget(self)
         self.setCentralWidget(central_widget)
@@ -123,15 +123,26 @@ class MainWindow(QMainWindow):
         msg_box.setText("<h2>Help & Tips</h2>")
         msg_box.setInformativeText(
             """
-                <h3>Words input</h3>
-                TDB<br/>
-                <h3>Digits input</h3>
-                TDB<br/>
-                <h3>Character input</h3>
-                TDB<br/>
+                <h3>Input</h3>
+                <h4>Words input</h4>
+                Add one word per line. When generating a random line is selected from the field.<br/>
+                <h5>Tip:</h5>
+                To make a more memorable password, if there is multiple word fields all but the last field should be adjectives (Pink, Big, Small).
+                Then the last field should be a nouns (House, Apple, Shoe). So the password ends up being something like; BigHouse or SmallPinkShoe.<br/>
                 <br/>
-                Please report any issues at: 
+                Words should also be capitalized to increase security.<br/>
+                
+                <h4>Digits input</h4>
+                Set the number of digits [0-9] to generate.<br/>
+                <h4>Character input</h4>
+                Set the number of special characters ['!', '#', '_', '-', '&', '%'] to generate.<br/>
+                <h3>Save state</h3>
+                The current input configuration is saved to a file when closing the application.<br/>
+                The file 'input.current' is saved next to the executable. To clear the save state just delete that file.<br/>
+                <h3>Contact</h3>
+                Please report any issues at:
                 <a href=\"https://github.com/timotii48/NaturalPasswordGenerator\">Github</a><br/>
+                For anyting else email me at: <a href=\"t.jungvig@hotmail.com\">t.jungvig@hotmail.com</a>
             """
             )
         msg_box.setTextFormat(QtCore.Qt.RichText)

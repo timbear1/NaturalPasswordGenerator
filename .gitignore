@@ -1,1 +1,5 @@
 input.current
+dist
+build
+__pycache__
+main.spec
