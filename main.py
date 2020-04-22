@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QMainWindow, QWidget, QLabel, QGridLayout, \
     QPushButton, QTextEdit, QVBoxLayout, QHBoxLayout, QGroupBox, QSpinBox, \
     QMessageBox
 from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtGui import QIcon
 
 
 class MainWindow(QMainWindow):
@@ -12,7 +13,8 @@ class MainWindow(QMainWindow):
 
         self.inputs = []
 
-        self.setWindowTitle("Natural Password Generator - v1.0")
+        self.setWindowIcon(QIcon(resource_path() + "icon.png"))
+        self.setWindowTitle("Natural Password Generator v1.0")
 
         central_widget = QWidget(self)
         self.setCentralWidget(central_widget)
@@ -68,6 +70,7 @@ class MainWindow(QMainWindow):
         self.output = QTextEdit(self)
         layout.addWidget(self.output)
         self.grid_layout.addWidget(group, 0, 3, 8, 1)
+        self.output.append(resource_path())
 
     def create_input(self):
         widget = QWidget(self)
@@ -123,22 +126,21 @@ class MainWindow(QMainWindow):
         msg_box.setText("<h2>Help & Tips</h2>")
         msg_box.setInformativeText(
             """
-                <h3>Input</h3>
-                <h4>Words input</h4>
-                Add one word per line. When generating a random line is selected from the field.<br/>
-                <h5>Tip:</h5>
-                To make a more memorable password, if there is multiple word fields all but the last field should be adjectives (Pink, Big, Small).
-                Then the last field should be a nouns (House, Apple, Shoe). So the password ends up being something like; BigHouse or SmallPinkShoe.<br/>
-                <br/>
-                Words should also be capitalized to increase security.<br/>
-                
-                <h4>Digits input</h4>
+                <h3>Inputs:</h3>
+                <h5>Words input</h5>
+                Add one word per line. When generating a password - a random line from each field is selected.<br/>         
+                <h5>Digits input</h5>
                 Set the number of digits [0-9] to generate.<br/>
-                <h4>Character input</h4>
-                Set the number of special characters ['!', '#', '_', '-', '&', '%'] to generate.<br/>
+                <h5>Character input</h5>
+                Set the number of special characters ['!', '#', '*', '&', '%'] to generate.<br/>
                 <h3>Save state</h3>
                 The current input configuration is saved to a file when closing the application.<br/>
                 The file 'input.current' is saved next to the executable. To clear the save state just delete that file.<br/>
+                <h3>Tips</h3>
+                To make a more memorable password it's suggested to make all but the last word field adjectives (Pink, Big, Small).
+                The last word field should then be nouns (House, Apple, Shoe). So the password ends up being something along the lines of; BigHouse or SmallPinkShoe.<br/>
+                <br/>
+                Words should also be capitalized to increase security.<br/>
                 <h3>Contact</h3>
                 Please report any issues at:
                 <a href=\"https://github.com/timotii48/NaturalPasswordGenerator\">Github</a><br/>
@@ -174,6 +176,7 @@ class MainWindow(QMainWindow):
         self.create_words_field()
         self.create_words_field()
         self.create_digits_field()
+        self.create_characters_field()
 
 
 class WordInput(QGroupBox):
@@ -269,7 +272,7 @@ class CharactersInput(QGroupBox):
         pass
 
     def generate(self):
-        chars = ['!', '#', '_', '-', '&', '%']
+        chars = ['!', '#', '*', '&', '%']
 
         text = ""
         num = self.spin.value()
@@ -287,6 +290,12 @@ class CharactersInput(QGroupBox):
     def deserialize(self, data):
         self.spin.setValue(data['input'])
 
+
+def resource_path():
+    if hasattr(sys, 'frozen') and hasattr(sys, '_MEIPASS'):
+        return sys._MEIPASS + "\\res\\"
+    else:
+        return os.path.abspath(".") + "\\"
 
 if __name__ == "__main__":
     APP = QtWidgets.QApplication(sys.argv)
