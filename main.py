@@ -13,7 +13,7 @@ class MainWindow(QMainWindow):
 
         self.inputs = []
 
-        self.setWindowIcon(QIcon(resource_path() + "icon.png"))
+        self.setWindowIcon(QIcon(get_resource_path() + "icon.png"))
         self.setWindowTitle("Natural Password Generator v1.0.1")
 
         central_widget = QWidget(self)
@@ -61,7 +61,7 @@ class MainWindow(QMainWindow):
         self.grid_layout.addWidget(add_words_btn, 1, 0, QtCore.Qt.AlignTop)
         self.grid_layout.addWidget(add_digits_btn, 1, 1, QtCore.Qt.AlignTop)
         self.grid_layout.addWidget(add_characters_btn, 1, 2, QtCore.Qt.AlignTop)
-        
+
     def create_output(self):
         group = QGroupBox("Output:", self)
         layout = QVBoxLayout()
@@ -127,7 +127,7 @@ class MainWindow(QMainWindow):
             """
                 <h3>Inputs:</h3>
                 <h5>Words input</h5>
-                Add one word per line. When generating a password - a random line from each field is selected.<br/>         
+                Add one word per line. When generating a password - a random line from each field is selected.<br/>
                 <h5>Digits input</h5>
                 Set the number of digits to generate. 1 digit is 0 to 9.<br/>
                 <h5>Character input</h5>
@@ -158,7 +158,7 @@ class MainWindow(QMainWindow):
         data['inputs'] = []
         for i in self.inputs:
             data['inputs'].append(i.serialize())
-        with open('input.current', 'w') as outfile:
+        with open(get_save_path() + 'input.current', 'w') as outfile:
             json.dump(data, outfile, sort_keys=False, indent=4, separators=(',', ': '))
 
     def restore(self):
@@ -292,11 +292,18 @@ class CharactersInput(QGroupBox):
         self.spin.setValue(data['input'])
 
 
-def resource_path():
+def get_resource_path():
     if hasattr(sys, 'frozen') and hasattr(sys, '_MEIPASS'):
-        return sys._MEIPASS + "\\res\\"
+        return sys._MEIPASS + "/res/"
     else:
-        return os.path.abspath(".") + "\\"
+        return os.path.abspath(".") + "/"
+
+def get_save_path():
+    if hasattr(sys, 'frozen'):
+        path = os.path.dirname(sys.executable)
+        return path + "/"
+    else:
+        return ""
 
 if __name__ == "__main__":
     APP = QtWidgets.QApplication(sys.argv)
