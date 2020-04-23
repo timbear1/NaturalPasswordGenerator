@@ -67,8 +67,15 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout()
         group.setLayout(layout)
         group.setMinimumWidth(200)
+
         self.output = QTextEdit(self)
+        self.output.setReadOnly(True)
         layout.addWidget(self.output)
+
+        copy_to_clipboard_btn = QPushButton("Copy To Clipboard", self)
+        copy_to_clipboard_btn.clicked.connect(self.copy_to_clipboard)
+        layout.addWidget(copy_to_clipboard_btn)
+
         self.grid_layout.addWidget(group, 0, 3, 8, 1)
 
     def create_input(self):
@@ -116,6 +123,10 @@ class MainWindow(QMainWindow):
     def clear_output(self):
         self.output.clear()
         self.output.repaint()
+
+    @pyqtSlot()
+    def copy_to_clipboard(self):
+        QtWidgets.QApplication.clipboard().setText(self.output.toPlainText().splitlines()[-1])
 
     @pyqtSlot()
     def help(self):
